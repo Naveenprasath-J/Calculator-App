@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/YOUR_REPO_URL.git'
+            }
+        }
+
+        stage('Compile Java Files') {
+            steps {
+                sh 'javac -d bin src/*.java'
+            }
+        }
+
+        stage('Run Application') {
+            steps {
+                sh 'java -cp bin Calculator'
+            }
+        }
+
+        stage('Show Build Status') {
+            steps {
+                script {
+                    def status = sh(script: 'echo $? ', returnStdout: true).trim()
+                    if (status == '0') {
+                        echo 'Build Successful!'
+                    } else {
+                        echo 'Build Failed!'
+                    }
+                }
+            }
+        }
+    }
+}
